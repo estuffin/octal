@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Login</title>
+</head>
+<body>
+	<h3>Login with:</h3>
+	<p th:each="url : ${urls}">
+	    <a th:text="${url.key}" th:href="${url.value}">Client</a>
+	</p>
+</body>
+</html>
