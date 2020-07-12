@@ -1,4 +1,4 @@
-package octal.db;
+package octal.models;
 
 import java.util.Date;
 
