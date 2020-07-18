@@ -6,5 +6,11 @@
 </head>
 <body>
 	All your servers boi
+	
+	<a href="#">New Server</a>
+	
+	<div th:each="server : ${servers}">
+	    <p th:text="${server.toString()}">Client</p>
+	</div>
 </body>
 </html>

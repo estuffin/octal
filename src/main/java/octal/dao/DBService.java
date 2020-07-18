@@ -1,5 +1,6 @@
 package octal.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -89,5 +90,9 @@ public class DBService extends OidcUserService  {
 	
 	public void deleteServer(long id) {
 		dao.deleteServer(id);
+	}
+	
+	public List<Server> fetchUserServers(long userId) {
+		return dao.fetchUserServers(userId);
 	}
 }

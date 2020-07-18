@@ -1,6 +1,7 @@
 package octal.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import octal.Utils;
 import octal.dao.DBService;
+import octal.models.Server;
+import octal.models.User;
 
 @Controller
 public class NavController {
@@ -33,8 +36,7 @@ public class NavController {
 	
 	@GetMapping("/")
 	ModelAndView home(Model model, OAuth2AuthenticationToken authentication, HttpServletRequest req) {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("home");
+		ModelAndView mv = new ModelAndView("home");
 		
 		if (authentication != null) {
 			String ip = Utils.getClientIpAddress(req);
@@ -43,8 +45,6 @@ public class NavController {
             for (Map.Entry<String, Object> o : user.getAttributes().entrySet()) {
             	logger.info("Key = " + o.getKey() + " | " + o.getValue());
             }
-            
-//            model.addAttribute("name", authentication.getPrincipal().getAttribute("name"));
 		}
 		
 		return mv;
@@ -70,9 +70,19 @@ public class NavController {
 	}
 	
 	@GetMapping("servers")
-	ModelAndView servers() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("servers");
+	ModelAndView servers(HttpServletRequest req) {
+		User         user    = (User)req.getSession().getAttribute("userObj");
+		Long         userId  = user == null ? null : user.getUser_id();
+		List<Server> servers = null;
+		ModelAndView mv      = new ModelAndView("servers");
+		
+		logger.info("Getting servers for " + req.getSession().getAttribute("username") + " (" + userId + ")");
+		
+		if (userId != null) {
+			servers = db.fetchUserServers(userId);
+			mv.addObject("servers", servers);
+		}
+		
 		return mv;
 	}
 

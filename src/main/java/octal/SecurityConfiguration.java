@@ -29,7 +29,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .oauth2Login()
-                .loginPage("/login").successHandler(authSuccessHandler)
+                .loginPage("/login")
+                .successHandler(authSuccessHandler)
                 .redirectionEndpoint()
                 .baseUri("/oauth2/callback/*");
 

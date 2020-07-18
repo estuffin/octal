@@ -56,6 +56,13 @@ public class DAO {
 		return entityManager.find(Server.class, id);
 	}
 	
+	public List<Server> fetchUserServers(long userId) {
+		Query q = entityManager.createQuery("FROM Server WHERE user_id = :user_id");
+		q.setParameter("user_id", userId);
+		List<Server> result = (List<Server>) q.getResultList();
+		return result;
+	}
+	
 	public void deleteServer(long id) {
 		Server server = fetchServer(id);
 		if (server != null) {
