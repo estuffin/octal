@@ -3,10 +3,13 @@ package octal.models;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  * @author Eric Sutphen
@@ -17,8 +20,12 @@ import javax.persistence.TemporalType;
 public class User {
 
 	@Id
+	@GeneratedValue(generator="increment")
+	@GenericGenerator(name="increment", strategy = "increment")
 	private Long user_id;
+	private String g_id;
 	private String email;
+	private String name;
 	private int login_count;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date create_date;
@@ -31,12 +38,19 @@ public class User {
 	private String curr_ip;
 	private String last_ip;
 	private String do_api_key;
+	private String picture;
 	
 	public Long getUser_id() {
 		return user_id;
 	}
 	public void setUser_id(Long user_id) {
 		this.user_id = user_id;
+	}
+	public String getG_id() {
+		return g_id;
+	}
+	public void setG_id(String g_id) {
+		this.g_id = g_id;
 	}
 	public String getEmail() {
 		return email;
@@ -92,12 +106,23 @@ public class User {
 	public void setDo_api_key(String do_api_key) {
 		this.do_api_key = do_api_key;
 	}
-
+	public String getPicture() {
+		return picture;
+	}
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	@Override
 	public String toString() {
-		return "User [user_id=" + user_id + ", email=" + email + ", login_count=" + login_count + ", create_date="
-				+ create_date + ", update_date=" + update_date + ", last_login_date=" + last_login_date
-				+ ", curr_login_date=" + curr_login_date + ", curr_ip=" + curr_ip + ", last_ip=" + last_ip
-				+ ", do_api_key=" + do_api_key + "]";
+		return "User [user_id=" + user_id + ", g_id=" + g_id + ", email=" + email + ", name=" + name + ", login_count="
+				+ login_count + ", create_date=" + create_date + ", update_date=" + update_date + ", last_login_date="
+				+ last_login_date + ", curr_login_date=" + curr_login_date + ", curr_ip=" + curr_ip + ", last_ip="
+				+ last_ip + ", do_api_key=" + do_api_key + ", picture=" + picture + "]";
 	}
 }

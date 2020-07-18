@@ -3,25 +3,23 @@ package octal.controllers;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
+
+import octal.Utils;
+import octal.dao.DBService;
 
 @Controller
 public class NavController {
@@ -31,38 +29,22 @@ public class NavController {
 	@Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
     @Autowired
-    private OAuth2AuthorizedClientService authorizedClientService;
+    DBService db;
 	
 	@GetMapping("/")
-	ModelAndView home(Model model, OAuth2AuthenticationToken authentication) {
+	ModelAndView home(Model model, OAuth2AuthenticationToken authentication, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("home");
 		
 		if (authentication != null) {
-			OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
-
-			if (client != null) {
-				String userInfoEndpointUri = client.getClientRegistration()
-			            .getProviderDetails()
-			            .getUserInfoEndpoint()
-			            .getUri();
-
-		        if (!StringUtils.isEmpty(userInfoEndpointUri)) {
-		            RestTemplate restTemplate = new RestTemplate();
-		            HttpHeaders headers = new HttpHeaders();
-		            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getAccessToken().getTokenValue());
-
-		            HttpEntity<String> entity = new HttpEntity<String>("", headers);
-		            ResponseEntity<Map> response = restTemplate.exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
-		            Map userAttributes = response.getBody();
-		            model.addAttribute("name", userAttributes.get("name"));
-		            
-		            logger.info("Logged-in user's attributes");
-		            for (Object key : userAttributes.keySet()) {
-		            	logger.info("Key = " + key + " | " + userAttributes.get(key));
-		            }
-		        }
-			}
+			String ip = Utils.getClientIpAddress(req);
+			OAuth2User user = authentication.getPrincipal();
+			
+            for (Map.Entry<String, Object> o : user.getAttributes().entrySet()) {
+            	logger.info("Key = " + o.getKey() + " | " + o.getValue());
+            }
+            
+//            model.addAttribute("name", authentication.getPrincipal().getAttribute("name"));
 		}
 		
 		return mv;

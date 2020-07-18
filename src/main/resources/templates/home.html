@@ -5,10 +5,13 @@
 <title>Octal</title>
 </head>
 <body>
+	<div class="navbar" th:fragment="header"></div>
+
 	This is the home page!
 	
 	<a href="login">Login</a>
+	<a href="logout">Logout</a>
 	
-	<p th:if="${name}" th:text="${name}"></p>
+	<p th:if="${session.username}" th:text="${session.username}"></p>
 </body>
 </html>
