@@ -3,10 +3,13 @@ package octal.models;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  * @author Eric Sutphen
@@ -17,6 +20,8 @@ import javax.persistence.TemporalType;
 public class Server {
 
 	@Id
+	@GeneratedValue(generator="increment")
+	@GenericGenerator(name="increment", strategy = "increment")
 	private Long server_id;
 	private Long user_id;
 	private String name;

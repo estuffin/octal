@@ -1,8 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Servers</title>
+	<meta charset="ISO-8859-1">
+	<title>Servers</title>
+	
+	<script type="text/javascript">
+		function createServer() {
+			var http = new XMLHttpRequest();
+			var url = 'get_data.php';
+			var data = {
+				name: document.getElementById('name').value,
+				do_region: document.getElementById('region').value,
+				do_size: document.getElementById('size').value,
+				do_snapshot_id: document.getElementById('snapshot').value,
+				ssh_key: document.getElementById('ssh').value
+			};
+			http.open('POST', 'server/create', true);
+			http.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+
+			http.onreadystatechange = function() {
+			    if(http.readyState == 4 && http.status == 200) {
+			        alert(http.responseText);
+			    }
+			}
+			http.send(JSON.stringify(data));
+		}
+	</script>
 </head>
 <body>
 	All your servers boi
@@ -18,7 +41,29 @@
 			Server creation
 		</div>
 		
-		<input type="text" />
+		<div>
+			<label for="name">
+				Server Name:
+				<input type="text" id="name" />
+			</label>
+			<label for="region">
+				Region:
+				<input type="text" id="region" />
+			</label>
+			<label for="size">
+				Size:
+				<input type="text" id="size" />
+			</label>
+			<label for="snapshot">
+				From Snapshot:
+				<input type="text" id="snapshot" />
+			</label>
+			<label for="ssh">
+				SSH Key:
+				<input type="text" id="ssh" />
+			</label>
+			<input type="submit" onclick="createServer()" />
+		</div>
 	</div>
 </body>
 </html>

@@ -44,8 +44,9 @@ public class DAO {
 		}
 	}
 	
-	public void createServer(Server server) {
+	public Server createServer(Server server) {
 		entityManager.persist(server);
+		return server;
 	}
 	
 	public void updateServer(Server server) {

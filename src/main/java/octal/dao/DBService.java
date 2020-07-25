@@ -76,8 +76,8 @@ public class DBService extends OidcUserService  {
 		return oUser;
 	}
 	
-	public void createServer(Server server) {
-		dao.createServer(server);
+	public Server createServer(Server server) {
+		return dao.createServer(server);
 	}
 	
 	public void updateServer(Server server) {
