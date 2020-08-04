@@ -6,39 +6,67 @@
 	
 	<script type="text/javascript">
 		function createServer() {
-			var http = new XMLHttpRequest();
-			var url = 'get_data.php';
-			var data = {
+			let data = {
 				name: document.getElementById('name').value,
 				do_region: document.getElementById('region').value,
 				do_size: document.getElementById('size').value,
 				do_snapshot_id: document.getElementById('snapshot').value,
 				ssh_key: document.getElementById('ssh').value
 			};
-			http.open('POST', 'server/create', true);
-			http.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
-
-			http.onreadystatechange = function() {
-			    if(http.readyState == 4 && http.status == 200) {
-			        alert(http.responseText);
-			    }
-			}
-			http.send(JSON.stringify(data));
+			fetch('server/create', {
+				method: 'POST',
+				headers: {
+					'Content-type': 'application/json; charset=UTF-8'
+				},
+				body: JSON.stringify(data)
+			})
+			.then(r => r.json())
+			.then(data => console.log(data));
 		}
+		
+		function getServers() {
+			fetch('server/list')
+			.then(r => r.json())
+			.then(r => {
+				let l = document.getElementById('servers');
+				if (r.length === 0) {
+					l.innerHTML = '<p>You have no servers.</p>';
+					return;
+				}
+				l.innerHTML = '';
+				for (let x = 0; x < r.length; x++) {
+					let p = document.createElement('p');
+					p.innerHTML = JSON.stringify(r[x]);
+					l.appendChild(p);
+				}
+			});
+		}
+		
+        window.onload = function() {
+        	getServers();
+        	
+          	let a = document.getElementById('new');
+	        a.onclick = function() {
+	        	document.getElementById('serverForm').style.display = 'block';
+	            return false;
+          	}
+	        a = document.getElementById('closeForm');
+	        a.onclick = function() {
+	        	document.getElementById('serverForm').style.display = 'none';
+	        	return false;
+	        }
+        }
 	</script>
 </head>
 <body>
 	All your servers boi
 	
-	<a href="#">New Server</a>
-	
-	<div th:each="server : ${servers}">
-	    <p th:text="${server.toString()}">Client</p>
-	</div>
-	
-	<div>
+	<a id="new" href="javascript:void(0);">New Server</a>
+		
+	<div id="serverForm" style="display:none">
 		<div>
 			Server creation
+			<a id="closeForm" href="javascript:void(0);">Close</a>
 		</div>
 		
 		<div>
@@ -65,5 +93,7 @@
 			<input type="submit" onclick="createServer()" />
 		</div>
 	</div>
+	
+	<pre id="servers"></pre>
 </body>
 </html>

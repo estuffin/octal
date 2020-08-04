@@ -1,6 +1,7 @@
 package octal.controllers;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -30,7 +31,13 @@ public class ServersController {
 	
     @GetMapping("{id}")
     Server one(@PathVariable Long id) {
-      return db.fetchServer(id);
+    	return db.fetchServer(id);
+    }
+    
+    @GetMapping("list")
+    List<Server> getServers(HttpSession session) {
+    	User user = (User)session.getAttribute("userObj");
+    	return db.fetchUserServers(user.getUser_id());
     }
     
 	@PostMapping("create")
