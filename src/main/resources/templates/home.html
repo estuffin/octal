@@ -12,6 +12,6 @@
 	<a href="login">Login</a>
 	<a href="logout">Logout</a>
 	
-	<p th:if="${session.username}" th:text="${session.username}"></p>
+	<p th:text="${@user?.getName()}"></p>
 </body>
 </html>

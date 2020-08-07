@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -27,6 +26,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 	@Autowired
 	private DBService db;
 	
+	@Autowired
+	User user;
+	
 	Logger logger = LoggerFactory.getLogger(CustomLogoutSuccessHandler.class);
 	
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -34,23 +36,16 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 	@Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         HttpSession     session = request.getSession();
-        DefaultOidcUser user    = (DefaultOidcUser)authentication.getPrincipal();
-		String          name    = user.getAttribute("name");
-		String          email   = user.getAttribute("email");
         
         if (session != null){
         	String refererUrl = request.getHeader("Referer");
-        	logger.info(name + " (" + email + ")" + " logging out from: " + refererUrl);
+        	logger.info("{} ({}) logging out from: {}" + user.getName(), user.getEmail(), refererUrl);
         	
-        	if (db != null) {
-        		User foundUser = db.findUserByEmail(email);
-                foundUser.setLast_ip(Utils.getClientIpAddress(request));
-                foundUser.setLast_login_date(new Date());
-                db.updateUser(foundUser);
+        	if (db != null && !user.isEmpty()) {
+                user.setLast_ip(Utils.getClientIpAddress(request));
+                user.setLast_login_date(new Date());
+                db.updateUser(user);
         	}
-        	 
-            session.removeAttribute("username");
-            session.removeAttribute("userEmail");
         }
         
         redirectStrategy.sendRedirect(request, response, "/");

@@ -33,6 +33,8 @@ public class NavController {
     private ClientRegistrationRepository clientRegistrationRepository;
     @Autowired
     DBService db;
+    @Autowired
+    User user;
 	
 	@GetMapping("/")
 	ModelAndView home(Model model, OAuth2AuthenticationToken authentication, HttpServletRequest req) {
@@ -71,12 +73,11 @@ public class NavController {
 	
 	@GetMapping("servers")
 	ModelAndView servers(HttpServletRequest req) {
-		User         user    = (User)req.getSession().getAttribute("userObj");
 		Long         userId  = user == null ? null : user.getUser_id();
 		List<Server> servers = null;
 		ModelAndView mv      = new ModelAndView("servers");
 		
-		logger.info("Getting servers for " + req.getSession().getAttribute("username") + " (" + userId + ")");
+		logger.info("Getting servers for {} ({})", user.getName(), userId);
 		
 		if (userId != null) {
 			servers = db.fetchUserServers(userId);

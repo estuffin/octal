@@ -10,6 +10,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.context.annotation.SessionScope;
 
 /**
  * @author Eric Sutphen
@@ -26,7 +27,7 @@ public class User {
 	private String g_id;
 	private String email;
 	private String name;
-	private int login_count;
+	private Integer login_count;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date create_date;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -124,5 +125,24 @@ public class User {
 				+ login_count + ", create_date=" + create_date + ", update_date=" + update_date + ", last_login_date="
 				+ last_login_date + ", curr_login_date=" + curr_login_date + ", curr_ip=" + curr_ip + ", last_ip="
 				+ last_ip + ", do_api_key=" + do_api_key + ", picture=" + picture + "]";
+	}
+	
+	public Boolean isEmpty() {
+		if (user_id == null 
+				&& g_id == null
+				&& email == null
+				&& name == null
+				&& login_count == null
+				&& create_date == null
+				&& update_date == null
+				&& last_login_date == null
+				&& curr_login_date == null
+				&& curr_ip == null
+				&& last_ip == null
+				&& do_api_key == null
+				&& picture == null)
+			return true;
+		else 
+			return false;
 	}
 }

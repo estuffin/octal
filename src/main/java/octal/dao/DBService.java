@@ -1,6 +1,5 @@
 package octal.dao;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,9 @@ public class DBService extends OidcUserService  {
 	}
 	
 	public void updateUser(User user) {
-		dao.updateUser(user);
+		if (user != null && !user.isEmpty()) {
+			dao.updateUser(user);
+		}
 	}
 	
 	public User fetchUser(long id) {

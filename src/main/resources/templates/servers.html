@@ -5,6 +5,15 @@
 	<title>Servers</title>
 	
 	<script type="text/javascript">
+		const FORM = 'serverForm';
+	
+		function handleErrors(r) {
+			if (!r.ok) {
+				throw Error(r.statusText);
+			}
+			return r;
+		}
+	
 		function createServer() {
 			let data = {
 				name: document.getElementById('name').value,
@@ -20,12 +29,18 @@
 				},
 				body: JSON.stringify(data)
 			})
+			.then(handleErrors)
 			.then(r => r.json())
-			.then(data => console.log(data));
+			.then(data => {
+				console.log(data);
+				getServers();
+				hideForm();
+			});
 		}
 		
 		function getServers() {
 			fetch('server/list')
+			.then(handleErrors)
 			.then(r => r.json())
 			.then(r => {
 				let l = document.getElementById('servers');
@@ -37,22 +52,39 @@
 				for (let x = 0; x < r.length; x++) {
 					let p = document.createElement('p');
 					p.innerHTML = JSON.stringify(r[x]);
-					l.appendChild(p);
+					
+					let a = document.createElement('a');
+					a.innerHTML = 'start';
+					a.href = 'javascript:void(0);';
+					a.onclick = function() {
+						fetch(`server/start/${r[x].server_id}`)
+						.then(handleErrors)
+						.then(data => console.log('starting server', data));
+					}
+					
+					let d = document.createElement('div');
+					d.appendChild(a);
+					d.appendChild(p);
+					
+					l.appendChild(d);
 				}
 			});
 		}
+		
+		const hideForm = () => document.getElementById(FORM).style.display = 'none';
+		const showForm = () => document.getElementById(FORM).style.display = 'block'; 
 		
         window.onload = function() {
         	getServers();
         	
           	let a = document.getElementById('new');
 	        a.onclick = function() {
-	        	document.getElementById('serverForm').style.display = 'block';
+	        	showForm();
 	            return false;
           	}
 	        a = document.getElementById('closeForm');
 	        a.onclick = function() {
-	        	document.getElementById('serverForm').style.display = 'none';
+	        	hideForm();
 	        	return false;
 	        }
         }
