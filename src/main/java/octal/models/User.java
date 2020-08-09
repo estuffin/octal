@@ -16,6 +16,8 @@ import org.springframework.web.context.annotation.SessionScope;
 import com.myjeeva.digitalocean.DigitalOcean;
 import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 
+import octal.CustDigitalOceanClient;
+
 /**
  * @author Eric Sutphen
  *
@@ -128,7 +130,7 @@ public class User {
 	public DigitalOcean getDoClient() {
 		if (doClient == null) {
 			if (!do_api_key.isEmpty()) {
-				doClient =  new DigitalOceanClient("v2", do_api_key);
+				doClient =  new CustDigitalOceanClient("v2", do_api_key);
             }
 		}
 		return doClient;

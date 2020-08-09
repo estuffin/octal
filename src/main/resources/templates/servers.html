@@ -5,8 +5,6 @@
 	<title>Servers</title>
 	
 	<script type="text/javascript">
-		const FORM = 'serverForm';
-	
 		function handleErrors(r) {
 			if (!r.ok) {
 				throw Error(r.statusText);
@@ -14,30 +12,6 @@
 			return r;
 		}
 	
-		function createServer() {
-			let data = {
-				name: document.getElementById('name').value,
-				do_region: document.getElementById('region').value,
-				do_size: document.getElementById('size').value,
-				do_snapshot_id: document.getElementById('snapshot').value,
-				ssh_key: document.getElementById('ssh').value
-			};
-			fetch('server/create', {
-				method: 'POST',
-				headers: {
-					'Content-type': 'application/json; charset=UTF-8'
-				},
-				body: JSON.stringify(data)
-			})
-			.then(handleErrors)
-			.then(r => r.json())
-			.then(data => {
-				console.log(data);
-				getServers();
-				hideForm();
-			});
-		}
-		
 		function getServers() {
 			fetch('server/list')
 			.then(handleErrors)
@@ -81,60 +55,15 @@
 			});
 		}
 		
-		const hideForm = () => document.getElementById(FORM).style.display = 'none';
-		const showForm = () => document.getElementById(FORM).style.display = 'block'; 
-		
         window.onload = function() {
         	getServers();
-        	
-          	let a = document.getElementById('new');
-	        a.onclick = function() {
-	        	showForm();
-	            return false;
-          	}
-	        a = document.getElementById('closeForm');
-	        a.onclick = function() {
-	        	hideForm();
-	        	return false;
-	        }
         }
 	</script>
 </head>
 <body>
 	All your servers boi
 	
-	<a id="new" href="javascript:void(0);">New Server</a>
-		
-	<div id="serverForm" style="display:none">
-		<div>
-			Server creation
-			<a id="closeForm" href="javascript:void(0);">Close</a>
-		</div>
-		
-		<div>
-			<label for="name">
-				Server Name:
-				<input type="text" id="name" />
-			</label>
-			<label for="region">
-				Region:
-				<input type="text" id="region" />
-			</label>
-			<label for="size">
-				Size:
-				<input type="text" id="size" />
-			</label>
-			<label for="snapshot">
-				From Snapshot:
-				<input type="text" id="snapshot" />
-			</label>
-			<label for="ssh">
-				SSH Key:
-				<input type="text" id="ssh" />
-			</label>
-			<input type="submit" onclick="createServer()" />
-		</div>
-	</div>
+	<a id="new" href="server/new">New Server</a>
 	
 	<pre id="servers"></pre>
 </body>

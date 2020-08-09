@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Create Server</title>
+	
+	<script type="text/javascript">	
+		var _regions, _sizes;
+		var $region, $size;
+	
+		function handleErrors(r) {
+			if (!r.ok) {
+				console.error(r);
+				throw Error(r.statusText);
+			}
+			return r;
+		}
+		
+		function createServer() {
+			let data = {
+				name: document.getElementById('name').value,
+				do_region: document.getElementById('region').value,
+				do_size: document.getElementById('size').value,
+				ssh_key: document.getElementById('ssh').value
+			};
+			fetch('/server/create', {
+				method: 'POST',
+				headers: {
+					'Content-type': 'application/json; charset=UTF-8'
+				},
+				body: JSON.stringify(data)
+			})
+			.then(handleErrors)
+			.then(r => r.json())
+			.then(data => {
+				window.location = '/servers';
+			});
+		}
+		
+		function getFormData() {
+			const urls = ['/do/regions', '/do/sizes'];
+			
+			Promise.all(urls.map(url =>
+			    fetch(url)
+			    .then(handleErrors)
+			    .then(r => r.json())
+			)).then(rs => {
+				console.log(rs);
+				
+				[_regions, _sizes] = rs.map(d => {
+					if (d.regions) {
+						return d.regions.sort(function(a, b) {
+							if (a.name < b.name) {
+								return -1;
+							}
+							if (a.name > b.name) {
+								return 1;
+							}
+							return 0;
+						});
+					}
+					if (d.sizes) {
+						return d.sizes.sort(function(a, b) {
+							if (a.slug < b.slug) {
+								return -1;
+							}
+							if (a.slug > b.slug) {
+								return 1;
+							}
+							return 0;
+						});
+					}
+				});
+				
+				console.log(_regions, _sizes);
+				
+				$region.innerHTML = '<option></option>';
+				for (let x = 0; x < _regions.length; x++) {
+					let o = document.createElement('option');
+					o.innerHTML = _regions[x].name;
+					o.value = _regions[x].slug;
+					$region.appendChild(o);
+				}
+			});
+		}
+		
+        window.onload = function() {
+        	getFormData();
+        	
+        	$region = document.getElementById('region');
+        	$size = document.getElementById('size');
+        	
+        	$region.onchange = function(e) {
+        		$size.innerHTML = '<option></option>';
+				for (let x = 0; x < _sizes.length; x++) {
+					if (_sizes[x].regions.indexOf(e.target.value) < 0) {
+						continue;
+					}
+					let o = document.createElement('option');
+					o.innerHTML = `${_sizes[x].slug} at ${_sizes[x].priceHourly}/hour up to ${_sizes[x].priceMonthly}/month`;
+					o.value = _sizes[x].slug;
+					$size.appendChild(o);
+				}
+				console.log($size.getElementsByTagName('option'));
+        	}
+        }
+	</script>
+</head>
+<body>
+	<div id="serverForm">
+		<h1>
+			Server creation
+		</h1>
+		
+		<div>
+			<label for="name">
+				Server Name:
+				<input type="text" id="name" />
+			</label>
+			<label for="region">
+				Region:
+				<select id="region">
+					<option></option>
+				</select>
+			</label>
+			<label for="size">
+				Size:
+				<select id="size">
+					<option></option>
+				</select>
+			</label>
+			<label for="ssh">
+				SSH Key:
+				<textarea id="ssh"></textarea>
+			</label>
+			<input type="submit" onclick="createServer()" />
+		</div>
+	</div>
+</body>
+</html>
