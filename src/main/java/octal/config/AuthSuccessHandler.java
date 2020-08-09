@@ -1,4 +1,4 @@
-package octal;
+package octal.config;
 
 import java.io.IOException;
 
@@ -15,8 +15,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.myjeeva.digitalocean.impl.DigitalOceanClient;
-
+import octal.CustDigitalOceanClient;
 import octal.dao.DBService;
 import octal.models.User;
 

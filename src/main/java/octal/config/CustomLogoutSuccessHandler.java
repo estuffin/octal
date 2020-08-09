@@ -1,4 +1,4 @@
-package octal;
+package octal.config;
 
 import java.io.IOException;
 import java.util.Date;
@@ -17,6 +17,7 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import octal.Utils;
 import octal.dao.DBService;
 import octal.models.User;
 
