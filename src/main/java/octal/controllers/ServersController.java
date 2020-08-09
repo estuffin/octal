@@ -1,7 +1,7 @@
 package octal.controllers;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -23,13 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.myjeeva.digitalocean.DigitalOcean;
 import com.myjeeva.digitalocean.exception.DigitalOceanException;
 import com.myjeeva.digitalocean.exception.RequestUnsuccessfulException;
-import com.myjeeva.digitalocean.impl.DigitalOceanClient;
+import com.myjeeva.digitalocean.pojo.Action;
 import com.myjeeva.digitalocean.pojo.Delete;
 import com.myjeeva.digitalocean.pojo.Droplet;
 import com.myjeeva.digitalocean.pojo.Image;
-import com.myjeeva.digitalocean.pojo.Key;
+import com.myjeeva.digitalocean.pojo.LinkAction;
 import com.myjeeva.digitalocean.pojo.Region;
-import com.myjeeva.digitalocean.pojo.Size;
 
 import octal.dao.DBService;
 import octal.models.Server;
@@ -59,12 +58,56 @@ public class ServersController {
     
 	@PostMapping("create")
 	public Server createServer(HttpSession session, HttpServletRequest req, @RequestBody Server data) {
+		logger.info("{} ({}) creating a new server: {}", user.getName(), user.getUser_id(), data.toString());
+		
 		data.setUser_id(user.getUser_id());
 		data.setCreate_date(new Date());
 		
 		// create ssh key here?
 		
 		return db.createServer(data);
+	}
+	
+	@GetMapping("delete/{id}")
+	public ResponseEntity<Object> deleteServer(@PathVariable Long id) {
+		logger.info("{} ({}) deleting server: {}", user.getName(), user.getUser_id(), id);
+		
+		Server server = db.fetchServer(id);
+		Integer doId = server.getDo_server_id();
+		Droplet droplet = null;
+		DigitalOcean client = user.getDoClient();
+		
+		if (doId != null) {
+			try {
+				droplet = client.getDropletInfo(doId);
+			} catch (DigitalOceanException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+			} catch (RequestUnsuccessfulException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
+			if (droplet != null) {
+				try {
+					client.deleteDroplet(doId);
+				} catch (DigitalOceanException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+				} catch (RequestUnsuccessfulException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
+		
+		db.deleteServer(id);
+		
+		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
 	@GetMapping("start/{id}")
@@ -100,7 +143,15 @@ public class ServersController {
 			 d = client.createDroplet(newDrop); // save droplet into db (specially the id)
 			 logger.info(d.toString());
 			 
+			 String links = "";
+			 for (LinkAction action : d.getLinks().getActions()) {
+				 links += action.getHref() + ",";
+			 }
+			 links = links.substring(0, links.length() - 1);
+			 
+			 server.setAction_link(links);
 			 server.setDo_server_id(d.getId());
+			 server.setUpdate_date(new Date());
 			 db.updateServer(server);
 		} catch (DigitalOceanException e) {
 			// TODO Auto-generated catch block
@@ -133,6 +184,11 @@ public class ServersController {
 			e.printStackTrace();
 			return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
+		server.setAction_link(null);
+		server.setDo_server_id(null);
+		server.setUpdate_date(new Date());
+		db.updateServer(server);
 		
 		return new ResponseEntity<Object>(HttpStatus.OK); 
 	}

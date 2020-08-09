@@ -45,9 +45,22 @@
 						.then(data => console.log('stopping server', data));
 					}
 					
+					let a3 = document.createElement('a');
+					a3.innerHTML = 'delete';
+					a3.href = 'javascript:void(0);';
+					a3.onclick = function() {
+						fetch(`server/delete/${r[x].server_id}`)
+						.then(handleErrors)
+						.then(data => {
+							console.log('deleting server', data);
+							getServers();
+						});
+					}
+					
 					let d = document.createElement('div');
 					d.appendChild(a);
 					d.appendChild(a2);
+					d.appendChild(a3);
 					d.appendChild(p);
 					
 					l.appendChild(d);
