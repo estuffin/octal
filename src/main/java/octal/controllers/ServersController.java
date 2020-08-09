@@ -79,15 +79,14 @@ public class ServersController {
 		Server server = db.fetchServer(id);
 		String serverName = "octal-" + id.toString() + "-" + server.getName().replace(" ", "-") + "-" + date;
 		
-		logger.info("Staring server: {}", serverName);
+		logger.info("Starting server: {}", serverName);
 		
 		DigitalOcean client = user.getDoClient();
 		Droplet newDrop = new Droplet();
 		newDrop.setName(serverName);
-		newDrop.setSize("512mb");
+		newDrop.setSize(server.getDo_size());
 		newDrop.setImage(new Image(47384041));
-//		newDrop.setRegion(new Region(server.getDo_region()));
-		newDrop.setRegion(new Region("nyc1"));
+		newDrop.setRegion(new Region(server.getDo_region()));
 		newDrop.setEnableBackup(false);
 		newDrop.setEnableIpv6(false);
 		newDrop.setEnablePrivateNetworking(false);

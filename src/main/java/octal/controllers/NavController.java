@@ -81,11 +81,11 @@ public class NavController {
 		List<Server> servers = null;
 		ModelAndView mv      = new ModelAndView("servers");
 		
-		logger.info("Getting servers for {} ({})", user.getName(), userId);
-		
 		if (userId != null) {
 			servers = db.fetchUserServers(userId);
 			mv.addObject("servers", servers);
+			
+			logger.info("Getting {} servers for {} ({})", servers.size(), user.getName(), userId);
 		}
 		
 		return mv;
