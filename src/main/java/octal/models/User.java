@@ -8,9 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.web.context.annotation.SessionScope;
+
+import com.myjeeva.digitalocean.DigitalOcean;
+import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 
 /**
  * @author Eric Sutphen
@@ -40,6 +44,8 @@ public class User {
 	private String last_ip;
 	private String do_api_key;
 	private String picture;
+	@Transient
+	private DigitalOcean doClient;
 	
 	public Long getUser_id() {
 		return user_id;
@@ -119,6 +125,18 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public DigitalOcean getDoClient() {
+		if (doClient == null) {
+			if (!do_api_key.isEmpty()) {
+				doClient =  new DigitalOceanClient("v2", do_api_key);
+            }
+		}
+		return doClient;
+	}
+	public void setDoClient(DigitalOcean doClient) {
+		this.doClient = doClient;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [user_id=" + user_id + ", g_id=" + g_id + ", email=" + email + ", name=" + name + ", login_count="

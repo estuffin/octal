@@ -62,8 +62,18 @@
 						.then(data => console.log('starting server', data));
 					}
 					
+					let a2 = document.createElement('a');
+					a2.innerHTML = 'stop';
+					a2.href = 'javascript:void(0);';
+					a2.onclick = function() {
+						fetch(`server/stop/${r[x].server_id}`)
+						.then(handleErrors)
+						.then(data => console.log('stopping server', data));
+					}
+					
 					let d = document.createElement('div');
 					d.appendChild(a);
+					d.appendChild(a2);
 					d.appendChild(p);
 					
 					l.appendChild(d);
