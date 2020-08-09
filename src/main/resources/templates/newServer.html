@@ -45,8 +45,6 @@
 			    .then(handleErrors)
 			    .then(r => r.json())
 			)).then(rs => {
-				console.log(rs);
-				
 				[_regions, _sizes] = rs.map(d => {
 					if (d.regions) {
 						return d.regions.sort(function(a, b) {
@@ -70,6 +68,13 @@
 							return 0;
 						});
 					}
+				});
+				
+				_sizes = _sizes.filter(d => {
+					return d.slug[0] === 'c'
+					|| d.slug[0] === 'g'
+					|| d.slug[0] === 'm'
+					|| d.slug[0] === 's'
 				});
 				
 				console.log(_regions, _sizes);
