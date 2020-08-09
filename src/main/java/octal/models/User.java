@@ -11,10 +11,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.web.context.annotation.SessionScope;
 
 import com.myjeeva.digitalocean.DigitalOcean;
-import com.myjeeva.digitalocean.impl.DigitalOceanClient;
 
 import octal.CustDigitalOceanClient;
 

@@ -19,10 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.myjeeva.digitalocean.exception.DigitalOceanException;
-import com.myjeeva.digitalocean.exception.RequestUnsuccessfulException;
-import com.myjeeva.digitalocean.pojo.Regions;
-
 import octal.Utils;
 import octal.dao.DBService;
 import octal.models.Server;
