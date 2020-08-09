@@ -1,7 +1,6 @@
 package octal.controllers;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -23,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.myjeeva.digitalocean.DigitalOcean;
 import com.myjeeva.digitalocean.exception.DigitalOceanException;
 import com.myjeeva.digitalocean.exception.RequestUnsuccessfulException;
-import com.myjeeva.digitalocean.pojo.Action;
 import com.myjeeva.digitalocean.pojo.Delete;
 import com.myjeeva.digitalocean.pojo.Droplet;
+import com.myjeeva.digitalocean.pojo.Droplets;
 import com.myjeeva.digitalocean.pojo.Image;
 import com.myjeeva.digitalocean.pojo.LinkAction;
 import com.myjeeva.digitalocean.pojo.Region;
@@ -53,7 +52,40 @@ public class ServersController {
     
     @GetMapping("list")
     public List<Server> getServers(HttpSession session) {
-    	return db.fetchUserServers(user.getUser_id());
+    	List<Server> servers = db.fetchUserServers(user.getUser_id());
+    	
+    	Droplets d = null;
+    	try {
+			d = user.getDoClient().getAvailableDroplets(0, 25);
+		} catch (DigitalOceanException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RequestUnsuccessfulException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	List<Droplet> droplets = d.getDroplets();
+    	if (droplets == null || droplets.size() == 0) {
+    		for (Server server : servers) {
+    			if (server.getDo_server_id() == null) {
+    				server.setDo_server_status(null);
+    				db.updateServer(server);
+    			}
+    		}
+    	} else {
+        	for (Server server : servers) {
+        		for (Droplet droplet : droplets) {
+        			if (server.getDo_server_id().equals(droplet.getId())) {
+        				server.setDo_server_status(droplet.getStatus().name());
+        				server.setUpdate_date(new Date());
+        				db.updateServer(server);
+        			}
+        		}
+        	}
+    	}
+    	
+    	return servers;
     }
     
 	@PostMapping("create")

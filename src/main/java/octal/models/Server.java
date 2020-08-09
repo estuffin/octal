@@ -34,7 +34,8 @@ public class Server {
 	private String do_region;
 	private String do_size;
 	private Integer do_server_id;
-	private String action_link;
+	private String do_action_link;
+	private String do_server_status;
 	
 	public Long getServer_id() {
 		return server_id;
@@ -97,16 +98,22 @@ public class Server {
 		this.do_server_id = do_server_id;
 	}
 	public String getAction_link() {
-		return action_link;
+		return do_action_link;
 	}
 	public void setAction_link(String action_link) {
-		this.action_link = action_link;
+		this.do_action_link = action_link;
+	}
+	public String getDo_server_status() {
+		return do_server_status;
+	}
+	public void setDo_server_status(String do_server_status) {
+		this.do_server_status = do_server_status;
 	}
 	@Override
 	public String toString() {
 		return "Server [server_id=" + server_id + ", user_id=" + user_id + ", name=" + name + ", create_date="
 				+ create_date + ", update_date=" + update_date + ", domain=" + domain + ", ssh_key=" + ssh_key
 				+ ", do_region=" + do_region + ", do_size=" + do_size + ", do_server_id=" + do_server_id
-				+ ", action_link=" + action_link + "]";
+				+ ", do_action_link=" + do_action_link + ", do_server_status=" + do_server_status + "]";
 	}
 }
