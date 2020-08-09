@@ -55,7 +55,7 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler im
             user.setUpdate_date(temp.getUpdate_date());
             user.setUser_id(temp.getUser_id());
             
-            if (!user.getDo_api_key().isEmpty()) {
+            if (user.getDo_api_key() != null && !user.getDo_api_key().isEmpty()) {
             	user.setDoClient(new CustDigitalOceanClient("v2", user.getDo_api_key()));
             }
         }

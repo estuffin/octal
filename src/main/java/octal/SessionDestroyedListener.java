@@ -28,6 +28,9 @@ public class SessionDestroyedListener implements ApplicationListener<HttpSession
 	@Autowired
 	private HttpServletRequest request;
 	
+	@Autowired
+	Utils utils;
+	
 	public void onApplicationEvent(HttpSessionDestroyedEvent evt) {
 		String refererUrl = request.getHeader("Referer");
     	logger.info("{} ({}) logging out from: {}", user.getName(), user.getUser_id(), refererUrl);
@@ -45,7 +48,7 @@ public class SessionDestroyedListener implements ApplicationListener<HttpSession
             temp.setPicture(user.getPicture());
             temp.setUpdate_date(user.getUpdate_date());
             temp.setUser_id(user.getUser_id());
-            temp.setLast_ip(Utils.getClientIpAddress(request));
+            temp.setLast_ip(utils.getClientIpAddress(request));
             temp.setLast_login_date(new Date());
             db.updateUser(temp);
     	}

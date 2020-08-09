@@ -70,6 +70,19 @@
 		
         window.onload = function() {
         	getServers();
+        	
+        	$btnApiKey = document.getElementById('btnApiKey');
+        	$btnApiKey.onclick = function() {
+        		let v = document.getElementById('apiKey').value;
+        		fetch('server/addKey', {
+    				method: 'POST',
+    				body: v
+    			})
+    			.then(handleErrors)
+    			.then(() => {
+    				v.value = '';
+    			});
+        	}
         }
 	</script>
 </head>
@@ -78,6 +91,9 @@
 	
 	<a href="/">Home</a>
 	<a id="new" href="server/new">New Server</a>
+	
+	<input id="apiKey" />
+	<button id="btnApiKey">Update</button>
 	
 	<pre id="servers"></pre>
 </body>

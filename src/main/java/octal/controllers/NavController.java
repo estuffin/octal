@@ -35,13 +35,15 @@ public class NavController {
     DBService db;
     @Autowired
     User user;
+    @Autowired
+    Utils utils;
 	
 	@GetMapping("/")
 	ModelAndView home(Model model, OAuth2AuthenticationToken authentication, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView("home");
 		
 		if (authentication != null) {
-			String ip = Utils.getClientIpAddress(req);
+			String ip = utils.getClientIpAddress(req);
 			OAuth2User user = authentication.getPrincipal();
 			
             for (Map.Entry<String, Object> o : user.getAttributes().entrySet()) {

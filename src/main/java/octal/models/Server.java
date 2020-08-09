@@ -30,7 +30,6 @@ public class Server {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date update_date;
 	private String domain;
-	private String ssh_key;
 	private String do_region;
 	private String do_size;
 	private Integer do_server_id;
@@ -73,12 +72,6 @@ public class Server {
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
-	public String getSsh_key() {
-		return ssh_key;
-	}
-	public void setSsh_key(String ssh_key) {
-		this.ssh_key = ssh_key;
-	}
 	public String getDo_region() {
 		return do_region;
 	}
@@ -112,8 +105,8 @@ public class Server {
 	@Override
 	public String toString() {
 		return "Server [server_id=" + server_id + ", user_id=" + user_id + ", name=" + name + ", create_date="
-				+ create_date + ", update_date=" + update_date + ", domain=" + domain + ", ssh_key=" + ssh_key
-				+ ", do_region=" + do_region + ", do_size=" + do_size + ", do_server_id=" + do_server_id
-				+ ", do_action_link=" + do_action_link + ", do_server_status=" + do_server_status + "]";
+				+ create_date + ", update_date=" + update_date + ", domain=" + domain + ", do_region=" + do_region
+				+ ", do_size=" + do_size + ", do_server_id=" + do_server_id + ", do_action_link=" + do_action_link
+				+ ", do_server_status=" + do_server_status + "]";
 	}
 }

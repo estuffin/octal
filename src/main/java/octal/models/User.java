@@ -127,7 +127,7 @@ public class User {
 	}
 	public DigitalOcean getDoClient() {
 		if (doClient == null) {
-			if (!do_api_key.isEmpty()) {
+			if (do_api_key != null && !do_api_key.isEmpty()) {
 				doClient =  new CustDigitalOceanClient("v2", do_api_key);
             }
 		}

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import octal.models.Server;
 import octal.models.User;
+import octal.models.UserKey;
 
 @Transactional
 @Repository
@@ -68,6 +69,32 @@ public class DAO {
 		Server server = fetchServer(id);
 		if (server != null) {
 			entityManager.remove(server);
+		}
+	}
+	
+	public void createUserKey(UserKey key) {
+		entityManager.persist(key);
+	}
+	
+	public void updateUserKey(UserKey key) {
+		entityManager.merge(key);
+	}
+	
+	public UserKey fetchUserKey(Integer id) {
+		return entityManager.find(UserKey.class, id);
+	}
+	
+	public List<UserKey> findUserKeysByUserId(Long id) {
+		Query q = entityManager.createQuery("FROM UserKey WHERE user_id = :user_id");
+		q.setParameter("user_id", id);
+		List<UserKey> result = (List<UserKey>) q.getResultList();
+		return result;
+	}
+	
+	public void deleteUserKey(Integer id) {
+		UserKey key = fetchUserKey(id);
+		if (key != null) {
+			entityManager.remove(key);
 		}
 	}
 }

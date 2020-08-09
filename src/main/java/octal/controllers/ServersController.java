@@ -1,6 +1,7 @@
 package octal.controllers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,9 +27,12 @@ import com.myjeeva.digitalocean.pojo.Delete;
 import com.myjeeva.digitalocean.pojo.Droplet;
 import com.myjeeva.digitalocean.pojo.Droplets;
 import com.myjeeva.digitalocean.pojo.Image;
+import com.myjeeva.digitalocean.pojo.Key;
 import com.myjeeva.digitalocean.pojo.LinkAction;
 import com.myjeeva.digitalocean.pojo.Region;
 
+import octal.CustDigitalOceanClient;
+import octal.Utils;
 import octal.dao.DBService;
 import octal.models.Server;
 import octal.models.User;
@@ -44,44 +48,78 @@ public class ServersController {
     
     @Autowired
     User user;
+    
+    @Autowired
+    Utils utils;
 	
     @GetMapping("{id}")
     public Server one(@PathVariable Long id) {
     	return db.fetchServer(id);
     }
     
+    @PostMapping("addKey")
+	public ResponseEntity<Object> addApiKey(@RequestBody String data) {
+    	logger.info("{} ({}) is adding their DO API key.", user.getName(), user.getUser_id());
+    	String apiKey = data.replace("\"", "");
+    	
+    	User temp = new User();
+		temp.setCreate_date(user.getCreate_date());
+		temp.setCurr_ip(user.getCurr_ip());
+		temp.setCurr_login_date(user.getCurr_login_date());
+        temp.setDo_api_key(apiKey);
+        temp.setEmail(user.getEmail());
+        temp.setG_id(user.getG_id());
+        temp.setLogin_count(user.getLogin_count());
+        temp.setName(user.getName());
+        temp.setPicture(user.getPicture());
+        temp.setUpdate_date(user.getUpdate_date());
+        temp.setUser_id(user.getUser_id());
+        temp.setLast_ip(user.getLast_ip());
+        temp.setLast_login_date(user.getLast_login_date());
+        db.updateUser(temp);
+    	
+		user.setDo_api_key(apiKey);
+		user.setDoClient(new CustDigitalOceanClient("v2", user.getDo_api_key()));
+		
+		db.createDoSshKey(user.getUser_id(), user.getDo_api_key());
+		
+		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+    
     @GetMapping("list")
     public List<Server> getServers(HttpSession session) {
     	List<Server> servers = db.fetchUserServers(user.getUser_id());
     	
-    	Droplets d = null;
-    	try {
-			d = user.getDoClient().getAvailableDroplets(0, 25);
-		} catch (DigitalOceanException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RequestUnsuccessfulException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    	List<Droplet> droplets = d.getDroplets();
-    	if (droplets == null || droplets.size() == 0) {
-    		for (Server server : servers) {
-    			if (server.getDo_server_id() == null) {
-    				server.setDo_server_status(null);
-    				db.updateServer(server);
-    			}
+    	if (user.getDo_api_key() != null && !user.getDo_api_key().isEmpty()) {
+    		Droplets d = null;
+        	try {
+    			d = user.getDoClient().getAvailableDroplets(0, 25);
+    		} catch (DigitalOceanException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (RequestUnsuccessfulException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
     		}
-    	} else {
-        	for (Server server : servers) {
-        		for (Droplet droplet : droplets) {
-        			if (server.getDo_server_id().equals(droplet.getId())) {
-        				server.setDo_server_status(droplet.getStatus().name());
-        				server.setUpdate_date(new Date());
+        	
+        	List<Droplet> droplets = d.getDroplets();
+        	if (droplets == null || droplets.size() == 0) {
+        		for (Server server : servers) {
+        			if (server.getDo_server_id() == null) {
+        				server.setDo_server_status(null);
         				db.updateServer(server);
         			}
         		}
+        	} else {
+            	for (Server server : servers) {
+            		for (Droplet droplet : droplets) {
+            			if (server.getDo_server_id().equals(droplet.getId())) {
+            				server.setDo_server_status(droplet.getStatus().name());
+            				server.setUpdate_date(new Date());
+            				db.updateServer(server);
+            			}
+            		}
+            	}
         	}
     	}
     	
@@ -94,9 +132,6 @@ public class ServersController {
 		
 		data.setUser_id(user.getUser_id());
 		data.setCreate_date(new Date());
-		
-		// create ssh key here?
-		
 		return db.createServer(data);
 	}
 	
@@ -166,9 +201,9 @@ public class ServersController {
 		newDrop.setEnableIpv6(false);
 		newDrop.setEnablePrivateNetworking(false);
 		
-//		List<Key> keys = new ArrayList<>();
-//		keys.add(new Key());
-//		newDrop.setKeys(keys);
+		List<Key> keys = new ArrayList<>();
+		keys.add(new Key());
+		newDrop.setKeys(keys);
 		
 		Droplet d;
 		try {
